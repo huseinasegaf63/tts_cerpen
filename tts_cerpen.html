@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TTS Interaktif - Materi Cerpen</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+            user-select: none;
+        }
+        h2 { color: #2c3e50; margin-bottom: 5px; }
+        p { color: #7f8c8d; margin-bottom: 20px; }
+        
+        .main-container {
+            display: flex;
+            gap: 30px;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        /* Grid TTS */
+        .crossword-board {
+            display: grid;
+            grid-template-columns: repeat(10, 38px);
+            grid-template-rows: repeat(10, 38px);
+            gap: 2px;
+            background-color: #34495e;
+            padding: 4px;
+            border-radius: 8px;
+        }
+
+        .cell {
+            width: 38px;
+            height: 38px;
+            background-color: #2c3e50;
+            position: relative;
+        }
+
+        .cell.active {
+            background-color: white;
+        }
+
+        .cell input {
+            width: 100%;
+            height: 100%;
+            border: none;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            text-transform: uppercase;
+            background: transparent;
+            color: #2c3e50;
+            outline: none;
+        }
+
+        .cell .number {
+            position: absolute;
+            top: 2px;
+            left: 3px;
+            font-size: 9px;
+            color: #7f8c8d;
+            font-weight: bold;
+            pointer-events: none;
+        }
+
+        /* Pertanyaan */
+        .clues-container {
+            width: 320px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .clue-section {
+            background-color: #f8f9fa;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+
+        .clue-section h3 {
+            margin: 0 0 8px 0;
+            color: #2c3e50;
+            font-size: 16px;
+        }
+
+        .clue-section ol {
+            margin: 0;
+            padding-left: 18px;
+            font-size: 13px;
+            color: #34495e;
+            line-height: 1.5;
+        }
+
+        .btn-check {
+            margin-top: 20px;
+            padding: 12px 25px;
+            font-size: 16px;
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-check:hover { background-color: #27ae60; }
+    </style>
+</head>
+<body>
+
+    <h2>Teka-Teki Silang Interaktif: Materi Cerpen</h2>
+    <p>Isi kotak kosong sesuai dengan pertanyaan Mendatar dan Menurun!</p>
+
+    <div class="main-container">
+        <!-- Papan TTS -->
+        <div class="crossword-board" id="board"></div>
+
+        <!-- Daftar Pertanyaan -->
+        <div class="clues-container">
+            <div class="clue-section">
+                <h3>Mendatar</h3>
+                <ol>
+                    <li value="1"><b>(Materi Pengertian)</b> Karangan fiksi pendek yang berfokus pada satu tokoh dan konflik utama.</li>
+                    <li value="3"><b>(Materi Struktur)</b> Tahap peleraian atau penyelesaian masalah dalam cerita.</li>
+                    <li value="5"><b>(Materi Unsur Ekstrinsik)</b> Keyakinan atau kebiasaan masyarakat yang memengaruhi latar belakang karya.</li>
+                </ol>
+            </div>
+            <div class="clue-section" style="border-left-color: #e74c3c;">
+                <h3>Menurun</h3>
+                <ol>
+                    <li value="2"><b>(Materi Unsur Intrinsik)</b> Pesan moral yang ingin disampaikan pengarang kepada pembaca.</li>
+                    <li value="4"><b>(Materi Kebahasaan)</b> Gaya bahasa atau perumpamaan yang digunakan untuk memperindah cerita.</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <button class="btn-check" onclick="checkAnswers()">Periksa Jawaban</button>
+
+    <script>
+        // Konfigurasi Grid 10x10 (R = Row, C = Col)
+        // Jawaban: 1. CERPEN (1,1 H), 2. AMANAT (1,6 V), 3. RESOLUSI (5,1 H), 4. MAJAS (4,3 V), 5. BUDAYA (8,1 H)
+        const gridData = [
+            { r: 1, c: 1, num: 1, ans: 'C' }, { r: 1, c: 2, ans: 'E' }, { r: 1, c: 3, ans: 'R' }, { r: 1, c: 4, ans: 'P' }, { r: 1, c: 5, ans: 'E' }, { r: 1, c: 6, num: 2, ans: 'N' },
+            { r: 2, c: 6, ans: 'M' },
+            { r: 3, c: 6, ans: 'A' },
+            { r: 4, c: 3, num: 4, ans: 'M' }, { r: 4, c: 6, ans: 'N' },
+            { r: 5, c: 1, num: 3, ans: 'R' }, { r: 5, c: 2, ans: 'E' }, { r: 5, c: 3, ans: 'S' }, { r: 5, c: 4, ans: 'O' }, { r: 5, c: 5, ans: 'L' }, { r: 5, c: 6, ans: 'U' }, { r: 5, c: 7, ans: 'S' }, { r: 5, c: 8, ans: 'I' },
+            { r: 6, c: 3, ans: 'J' }, { r: 6, c: 6, ans: 'T' },
+            { r: 7, c: 3, ans: 'A' },
+            { r: 8, c: 1, num: 5, ans: 'B' }, { r: 8, c: 2, ans: 'U' }, { r: 8, c: 3, ans: 'D' }, { r: 8, c: 4, ans: 'A' }, { r: 8, c: 5, ans: 'Y' }, { r: 8, c: 6, ans: 'A' }
+        ];
+
+        const board = document.getElementById('board');
+
+        // Buat Grid 10x10
+        for (let r = 0; r < 10; r++) {
+            for (let c = 0; c < 10; c++) {
+                const cell = document.createElement('div');
+                cell.classList.add('cell');
+
+                const item = gridData.find(d => d.r === r && d.c === c);
+
+                if (item) {
+                    cell.classList.add('active');
+                    if (item.num) {
+                        const numDiv = document.createElement('div');
+                        numDiv.classList.add('number');
+                        numDiv.innerText = item.num;
+                        cell.appendChild(numDiv);
+                    }
+                    const input = document.createElement('input');
+                    input.setAttribute('maxlength', '1');
+                    input.setAttribute('data-ans', item.ans);
+                    input.id = `cell-${r}-${c}`;
+                    
+                    // Auto-advance cursor
+                    input.addEventListener('input', (e) => {
+                        e.target.value = e.target.value.toUpperCase();
+                    });
+
+                    cell.appendChild(input);
+                }
+                board.appendChild(cell);
+            }
+        }
+
+        function checkAnswers() {
+            let correctCount = 0;
+            let totalActive = gridData.length;
+
+            gridData.forEach(item => {
+                const input = document.getElementById(`cell-${item.r}-${item.c}`);
+                if (input.value.toUpperCase() === item.ans) {
+                    input.style.color = '#2ecc71';
+                    correctCount++;
+                } else {
+                    input.style.color = '#e74c3c';
+                }
+            });
+
+            if (correctCount === totalActive) {
+                alert('Luor biasa! Semua jawaban kamu benar!');
+            } else {
+                alert(`Kamu menjawab ${correctCount} dari ${totalActive} huruf dengan benar. Coba periksa huruf yang berwarna merah!`);
+            }
+        }
+    </script>
+</body>
+</html>
